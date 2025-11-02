@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Needy Location | HungerConnect</title>
+  <style>
+    :root {
+      --primary: #FF6B6B;
+      --secondary: #4ECDC4;
+      --dark: #292F36;
+      --light: #F7FFF7;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    header {
+      display: flex;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(41, 47, 54, 0.1);
+      margin-bottom: 30px;
+    }
+    .back-btn {
+      background-color: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    h1 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    #map {
+      height: 300px;
+      width: 100%;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #e85d5d;
+    }
+    .success-message {
+      display: none;
+      color: green;
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back</button>
+    </header>
+
+    <h1>Report Needy Location</h1>
+    <p class="subtitle">Help us reach those who need food the most.</p>
+
+    <form id="reportForm">
+      <label>📍 Location of the Needy</label>
+      <div id="map"></div>
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
+
+      <label>👥 Approx. number of people</label>
+      <input type="number" name="people" min="1" placeholder="e.g. 10" required>
+
+      <label>🛏 Type of Group</label>
+      <select name="groupType" required>
+        <option value="">Select group type</option>
+        <option value="Homeless">Homeless</option>
+        <option value="Slum area">Slum area</option>
+        <option value="Orphanage">Orphanage</option>
+        <option value="Elderly group">Elderly group</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label>🧾 Description (Optional)</label>
+      <textarea name="description" rows="4" placeholder="E.g., 10 people near temple, no food for 2 days."></textarea>
+
+      <label>📸 Upload Photo (Optional)</label>
+      <input type="file" name="photo" accept="image/*">
+
+      <label>⏰ Best time to deliver food</label>
+      <input type="time" name="time" required>
+
+      <label>👤 Your Name (optional)</label>
+      <input type="text" name="reporterName" placeholder="Your name">
+
+      <label>📞 Contact (optional)</label>
+      <input type="text" name="contact" placeholder="Phone or email">
+
+      <button type="submit" class="btn">Report Location</button>
+      <div class="success-message" id="successMsg">Thank you! Your report will help us serve food where it’s needed.</div>
+    </form>
+  </div>
+
+  <script>
+  let selectedLat = null;
+  let selectedLng = null;
+
+  // Initialize map
+  function initMap() {
+    const defaultLocation = { lat: 17.6868, lng: 83.2185 }; // Vizag
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: defaultLocation,
+      zoom: 14
+    });
+
+    const marker = new google.maps.Marker({
+      position: defaultLocation,
+      map,
+      draggable: true
+    });
+
+    selectedLat = defaultLocation.lat;
+    selectedLng = defaultLocation.lng;
+
+    marker.addListener("dragend", function () {
+      selectedLat = marker.getPosition().lat();
+      selectedLng = marker.getPosition().lng();
+    });
+  }
+
+  document.getElementById('reportForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    const locationData = {
+      ...data,
+      latitude: selectedLat,
+      longitude: selectedLng
+    };
+
+    const res = await fetch("http://localhost:5000/api/locations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(locationData)
+    });
+
+    if (res.ok) {
+      document.getElementById('successMsg').style.display = 'block';
+      this.reset();
+    } else {
+      alert("❌ Error reporting location");
+    }
+  });
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCPDq1dvHlaflyKI9xJZKohCvUhV2yFbXA&callback=initMap" async defer></script>
+
+</body>
+</html>

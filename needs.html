@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Current Needs | HungerConnect</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7fff7;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #FF6B6B;
+      margin-bottom: 30px;
+    }
+    .needs-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .need-card {
+      background: white;
+      padding: 20px;
+      border-left: 5px solid #FF6B6B;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .need-card h3 {
+      margin-bottom: 10px;
+      color: #292F36;
+    }
+    .need-card p {
+      font-size: 14px;
+      color: #444;
+      margin: 5px 0;
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 10px;
+      color: #777;
+    }
+    .btn-deliver {
+      margin-top: 15px;
+      background-color: #FF6B6B ;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .btn-deliver:hover {
+      background-color: #FF6B6B ;
+    }
+  </style>
+</head>
+<body>
+  <h1>Current Needs</h1>
+  <div class="needs-container" id="needsList"></div>
+
+  <script>
+    async function fetchNeeds() {
+      try {
+        const res = await fetch("http://localhost:5000/api/locations");
+        const data = await res.json();
+
+        const needsList = document.getElementById("needsList");
+        needsList.innerHTML = "";
+
+        data.forEach(loc => {
+          const div = document.createElement("div");
+          div.className = "need-card";
+          div.innerHTML = `
+            <h3>${loc.groupType} (${loc.people} people)</h3>
+            <p>📍 Latitude: ${loc.latitude}, Longitude: ${loc.longitude}</p>
+            <p>🕒 Best Time: ${loc.time}</p>
+            <p>📝 ${loc.description || 'No additional details.'}</p>
+            <div class="meta">
+              <span>Reported by: ${loc.reporterName || 'Anonymous'}</span>
+              <span>Urgency: ${loc.urgency || 'Medium'}</span>
+            </div>
+            <button class="btn-deliver" onclick="markDelivered('${loc.id}')">Deliver</button>
+          `;
+          needsList.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Error fetching needs:", err);
+        alert("❌ Failed to load current needs.");
+      }
+    }
+
+    function markDelivered(locationId) {
+      alert(`🚚 Delivery confirmed for location ID: ${locationId}`);
+      // Optional: Make a PUT request here to update delivery status
+    }
+
+    fetchNeeds();
+  </script>
+</body>
+</html>

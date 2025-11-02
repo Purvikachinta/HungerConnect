@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login & Register | HungerConnect</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0fff4, #e6fffa);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background: white;
+      padding: 2rem 1.5rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 420px;
+    }
+
+    .login-logo {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #FF6B6B;
+      font-weight: 700;
+    }
+
+    .login-subheading {
+      color: #FF6B6B;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-box {
+      padding: 1rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.6rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .login-btn,
+    .register-btn {
+      background-color: white;
+      color: #FF6B6B;
+      border: 2px solid #FF6B6B;
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .login-btn:hover,
+    .register-btn:hover {
+      background-color: #FF6B6B;
+      color: white;
+    }
+
+    .switch-link {
+      margin-top: 1rem;
+      color: #2b6cb0;
+      cursor: pointer;
+      font-weight: 500;
+      text-decoration: underline;
+    }
+
+    .message {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    .success {
+      color: #2f855a;
+    }
+
+    .error {
+      color: #e53e3e;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="login-logo">🍲</div>
+    <h1 class="login-title">HungerConnect</h1>
+    <p class="login-subheading">Connecting <span>surplus food</span> with those in need</p>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="form-box">
+      <input type="email" id="loginEmail" class="form-input" placeholder="Email" />
+      <input type="password" id="loginPassword" class="form-input" placeholder="Password" />
+      <button class="login-btn" onclick="loginUser()">Login</button>
+      <div class="switch-link" onclick="showRegister()">New user? Register here</div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="form-box hidden">
+      <input type="text" id="regFullName" class="form-input" placeholder="Full Name" />
+      <input type="email" id="regEmail" class="form-input" placeholder="Email" />
+      <input type="password" id="regPassword" class="form-input" placeholder="Password" />
+      <button class="register-btn" onclick="registerUser()">Register</button>
+      <div class="switch-link" onclick="showLogin()">Already have an account? Login</div>
+    </div>
+
+    <div class="message" id="messageBox"></div>
+  </div>
+
+  <script>
+  const API_URL = "http://localhost:5000/api/users";
+
+  function showRegister() {
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("registerForm").classList.remove("hidden");
+    document.getElementById("messageBox").textContent = "";
+  }
+
+  function showLogin() {
+    document.getElementById("registerForm").classList.add("hidden");
+    document.getElementById("loginForm").classList.remove("hidden");
+    document.getElementById("messageBox").textContent = "";
+  }
+
+  async function loginUser() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const messageBox = document.getElementById("messageBox");
+
+    try {
+      const res = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        messageBox.textContent = "✅ Login Successful! Redirecting...";
+        messageBox.className = "message success";
+        sessionStorage.setItem("loggedInUser", JSON.stringify(data.user));
+        setTimeout(() => {
+          window.location.href = "dashboard.html"; // Change to your dashboard
+        }, 1000);
+      } else {
+        messageBox.textContent = "❌ " + data.message;
+        messageBox.className = "message error";
+      }
+    } catch (err) {
+      messageBox.textContent = "❌ Server error. Please try again.";
+      messageBox.className = "message error";
+    }
+  }
+
+  async function registerUser() {
+    const fullName = document.getElementById("regFullName").value.trim();
+    const email = document.getElementById("regEmail").value.trim();
+    const password = document.getElementById("regPassword").value;
+    const messageBox = document.getElementById("messageBox");
+
+    if (!fullName || !email || !password) {
+      messageBox.textContent = "⚠️ Please fill in all fields.";
+      messageBox.className = "message error";
+      return;
+    }
+
+    if (!email.toLowerCase().endsWith("@gmail.com")) {
+      messageBox.textContent = "⚠️ Email must end with @gmail.com";
+      messageBox.className = "message error";
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        messageBox.textContent = "🎉 Registration successful! Please login.";
+        messageBox.className = "message success";
+        document.getElementById("regFullName").value = '';
+        document.getElementById("regEmail").value = '';
+        document.getElementById("regPassword").value = '';
+        showLogin();
+      } else {
+        messageBox.textContent = "❌ " + data.message;
+        messageBox.className = "message error";
+      }
+    } catch (err) {
+      messageBox.textContent = "❌ Server error. Please try again.";
+      messageBox.className = "message error";
+    }
+  }
+</script>
+
+</body>
+</html>

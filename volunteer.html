@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Volunteer - HungerConnect</title>
+  <style>
+    :root {
+      --primary: #FF6B6B;
+      --secondary: #4ECDC4;
+      --dark: #292F36;
+      --light: #F7FFF7;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      padding: 30px;
+    }
+
+    h1 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 15px 0 5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .section-title {
+      margin-top: 30px;
+      font-size: 20px;
+      color: var(--dark);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 5px;
+    }
+
+    .radio-group, .checkbox-group, .chip-group, .icon-group, .toggle-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .radio-group label, .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chip-group div, .icon-group div {
+      background-color: #eee;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chip-group div:hover, .icon-group div:hover {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    .submit-btn {
+      display: block;
+      margin: 30px auto 0;
+      background-color: var(--primary);
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #e85a5a;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Volunteer for Delivery</h1>
+  <div class="form-container">
+    <form>
+
+      <label>👤 Name</label>
+      <input type="text" placeholder="Your full name" required>
+
+      <label>📞 Phone Number (optional)</label>
+      <input type="tel" placeholder="Optional contact number">
+
+      <label>📍 Your Current Location</label>
+      <input type="text" placeholder="Allow GPS or enter address">
+
+      <label>🤔 Are you a regular volunteer or just passing by?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="volType" value="regular"> Registered/Regular</label>
+        <label><input type="radio" name="volType" value="passerby"> Passersby</label>
+      </div>
+
+      <label>🕒 Availability Duration</label>
+      <select>
+        <option>15 min</option>
+        <option>30 min</option>
+        <option>1 hr</option>
+        <option>Anytime</option>
+      </select>
+
+      <div class="section-title">Regular Volunteers Only</div>
+
+      <label>🗓 Days You Can Help</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox"> Mon</label>
+        <label><input type="checkbox"> Tue</label>
+        <label><input type="checkbox"> Wed</label>
+        <label><input type="checkbox"> Thu</label>
+        <label><input type="checkbox"> Fri</label>
+        <label><input type="checkbox"> Sat</label>
+        <label><input type="checkbox"> Sun</label>
+      </div>
+
+      <label>🕐 Time Slots</label>
+      <div class="chip-group">
+        <div>Morning</div>
+        <div>Afternoon</div>
+        <div>Evening</div>
+      </div>
+
+      <label>🚗 Transport Mode</label>
+      <div class="icon-group">
+        <div>🚶 Walk</div>
+        <div>🚴 Bike</div>
+        <div>🚗 Car</div>
+      </div>
+
+      <label>📏 Max Travel Distance</label>
+      <select>
+        <option>2 km</option>
+        <option>5 km</option>
+        <option>10+ km</option>
+      </select>
+
+      <label>🛑 Comfort with roadside/slum delivery?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="slum" value="yes"> Yes</label>
+        <label><input type="radio" name="slum" value="no"> No</label>
+      </div>
+
+      <label>📸 Upload ID (optional)</label>
+      <input type="file" accept="image/*">
+
+      <button type="submit" class="submit-btn">Submit</button>
+    </form>
+  </div>
+
+</body>
+</html>S
